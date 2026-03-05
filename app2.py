@@ -12,7 +12,8 @@ APP_SECRET = "3aYPRLvnZ8jmD1fyamuyhgC3QmDh4QHb"
 API_HOST = "https://open.feishu.cn/open-apis"
 # ===========================================
 
-st.set_page_config(page_title="剧本闪电拼接神器", page_icon="⚡", layout="centered")
+# 网页图标配置 (代码完全正确，不生效是因为浏览器缓存)
+st.set_page_config(page_title="剧本拼接工具", page_icon="📄", layout="centered")
 
 class FeishuDriveUploader:
     def __init__(self, app_id, app_secret):
@@ -44,7 +45,6 @@ class FeishuDriveUploader:
         if res.get("code") != 0:
             raise Exception(f"飞书返回错误: {res}")
             
-        # 🟢 核心修复：自己拼接链接，不再向飞书索要 url
         file_token = res["data"]["file_token"]
         file_url = f"https://www.feishu.cn/file/{file_token}"
         return file_token, file_url
@@ -73,26 +73,27 @@ def get_sort_weight(filename):
     return 999
 
 # ================= 网页 UI 与核心逻辑 =================
-st.title("⚡ 剧本闪电拼接与云盘工具")
-st.markdown("将分散的剧本片段自动**智能清洗、无缝拼接**。支持直接下载纯净版 TXT，或秒传至您的飞书云盘。")
+st.title("剧本拼接工具")
+st.markdown("将分散的剧本文件自动拼接，并一键导入至飞书。")
+st.caption("创作者：@pinacol_xiao")
 
 with st.container():
     col1, col2 = st.columns(2)
     with col1:
-        doc_title = st.text_input("📄 生成的文件名", value="剧本终极汇总(纯净版)")
+        doc_title = st.text_input("生成的文件名", value="英文剧名_名字_日期")
     with col2:
-        user_email = st.text_input("📧 接收人的飞书邮箱", value="xiaoyixuan.101@bytedance.com")
+        user_email = st.text_input("接收人的飞书邮箱", value="xiaoyixuan.101@bytedance.com")
 
-    uploaded_files = st.file_uploader("📂 拖拽上传所有 TXT 剧本文件", accept_multiple_files=True, type=['txt'])
+    uploaded_files = st.file_uploader("上传所有 TXT 剧本文件", accept_multiple_files=True, type=['txt'])
 
-# 占位符，用于在处理完成后显示下载按钮
 download_container = st.empty()
 
-if st.button("🚀 开始极速拼接", use_container_width=True, type="primary"):
+# 按钮加粗依然保留在代码里
+if st.button("**开始拼接**", use_container_width=True, type="primary"):
     if not uploaded_files:
-        st.warning("⚠️ 请先上传 TXT 文件！")
+        st.warning("请先上传 TXT 文件！")
     elif not user_email:
-        st.warning("⚠️ 请填写接收人的飞书邮箱！")
+        st.warning("请填写接收人的飞书邮箱！")
     else:
         sorted_files = sorted(uploaded_files, key=lambda f: get_sort_weight(f.name))
         merged_text = "# 1. 原创意\n\n## 1.1 创意内容\n\n## 1.2 来源\n\n---\n\n"
@@ -101,7 +102,7 @@ if st.button("🚀 开始极速拼接", use_container_width=True, type="primary"
         skip_keywords = ["质检结果", "通过质检", "经逐一审核", "综合评估", "推荐:", "推荐：", "推荐理由", "质检分析", "修改内容", "问题清单", "修正说明", "发现问题", "结构说明", "方案 1", "方案 2", "方案 3", "方案1", "方案2", "质检理由", "位置 |", "问题描述", "问题类型", "The following table:"]
         resume_keywords = ["Theme", "情绪:", "情绪：", "适用冲突", "主角:", "主角：", "对手:", "对手：", "Act ", "姓名", "分场信息", "Shooting script", "Shooting Script", "人物关系图谱", "角色关系图"]
 
-        with st.spinner('正在进行手术刀级数据清洗与拼接...'):
+        with st.spinner('正在进行数据清洗与拼接...'):
             for file in sorted_files:
                 filename = file.name
                 raw_lines = file.getvalue().decode("utf-8").splitlines()
@@ -151,37 +152,31 @@ if st.button("🚀 开始极速拼接", use_container_width=True, type="primary"
                 
                 merged_text += "\n".join(lines) + "\n\n---\n\n"
         
-        st.success("✅ 数据清洗与拼接已完成！")
+        st.success("拼接已完成✅") 
 
-        # ================= 1. 展现本地下载按钮 =================
         file_name_with_ext = f"{doc_title}.txt"
         with download_container:
             st.download_button(
-                label="⬇️ 点击下载：纯净版 TXT (保存至浏览器默认下载夹)",
+                label="将拼接结果保存至本地（浏览器默认下载文件夹）⬇️",
                 data=merged_text.encode("utf-8"),
                 file_name=file_name_with_ext,
                 mime="text/plain",
                 type="secondary"
             )
 
-        # ================= 2. 执行飞书上传 =================
         try:
-            with st.spinner('正在将文件闪传至飞书云盘...'):
+            with st.spinner('正在将文件传输至飞书云盘...'):
                 uploader = FeishuDriveUploader(APP_ID, APP_SECRET)
                 file_token, file_url = uploader.upload_txt_file(file_name_with_ext, merged_text)
-                
-                # 赋权给用户在网页填写的邮箱
                 uploader.add_user_permission(file_token, user_email)
                 
-            st.balloons()
-            
             st.markdown("---")
             st.markdown(f"""
-            ### 🎉 飞书直传成功！
-            ### 👉 **[点击这里，去飞书云盘查看文件]({file_url})**
+            ### 飞书直传成功！
+            ### **[点击这里，去飞书云盘查看文件]({file_url})**
             
-            *💡 核心玩法提示：打开上方链接后，点击页面顶部的 **「打开为文档」** 或 **「转为飞书文档」** 按钮，飞书将自动为你生成带表格的华丽排版！*
+            打开上方链接后，点击页面顶部的「转为在线文档」 按钮，即可获得排版好的飞书文档
             """)
 
         except Exception as e:
-            st.error(f"💥 上传飞书云盘时出错，请检查 App 权限。报错信息: {e}")
+            st.error(f"上传飞书云盘时出错，请检查 App 权限。报错信息: {e}")
