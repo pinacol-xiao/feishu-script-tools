@@ -82,7 +82,7 @@ with st.container():
     with col1:
         doc_title = st.text_input("生成的文件名", value="英文剧名_名字_日期")
     with col2:
-        user_email = st.text_input("接收人的飞书邮箱", value="xiaoyixuan.101@bytedance.com")
+        user_email = st.text_input("接收人的飞书邮箱", value="yourname@bytedance.com")
 
     uploaded_files = st.file_uploader("上传所有 TXT 剧本文件", accept_multiple_files=True, type=['txt'])
 
