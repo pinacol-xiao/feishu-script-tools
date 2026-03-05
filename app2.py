@@ -5,14 +5,14 @@ import re
 import time
 
 # ================= 配置区域 =================
-# 🔴 你的飞书后台最新的 App ID 和 Secret
+# 🔴 飞书后台最新的 App ID 和 Secret
 APP_ID = st.secrets["FEISHU_APP_ID"]
 APP_SECRET = st.secrets["FEISHU_APP_SECRET"]
 
 API_HOST = "https://open.feishu.cn/open-apis"
 # ===========================================
 
-# 网页图标配置 (代码完全正确，不生效是因为浏览器缓存)
+# 网页图标配置
 st.set_page_config(page_title="剧本拼接工具", page_icon="📄", layout="centered")
 
 class FeishuDriveUploader:
@@ -137,16 +137,12 @@ if st.button("**开始拼接**", use_container_width=True, type="primary"):
                     raw_str = line.strip()
                     clean_str = re.sub(r'^[*#\-\s\|]+', '', raw_str) 
                     
-                    # 👇 修改点 2：秒杀带有星星(★)或打勾(✓)的各种质检行
                     if '★' in clean_str or '✓' in clean_str:
                         skip_mode = True
                         continue
-
-                    # 👇 修改点 3：秒杀各种常见的AI质检小标题
                     if re.match(r'^\d+\.\s*(.*?契合度|.*?符合度|淘汰.*?原因|.*?检查|.*?错误|角色.*?问题|集与集衔接断裂)[：:]?', clean_str):
                         skip_mode = True
                         continue
-
                     if any(clean_str.startswith(kw) for kw in skip_keywords):
                         skip_mode = True
                         continue
