@@ -123,7 +123,7 @@ if st.button("**开始拼接**", use_container_width=True, type="primary"):
                 elif "细纲" in filename: merged_text += "# 7. 单集细纲\n\n"
                 elif "shootingscript" in filename.lower():
                     if not state_shooting_printed:
-                        merged_text += "# 8. Shooting script\n\n(保持四级标题，便于后续粘贴到供应商文档中)\n\n"
+                        merged_text += "# 8. Shooting script\n\n"
                         state_shooting_printed = True
                     match = re.search(r'第(\d+)集', filename)
                     ep_num = match.group(1) if match else "X"
