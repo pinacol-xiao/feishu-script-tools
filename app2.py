@@ -6,8 +6,8 @@ import time
 
 # ================= 配置区域 =================
 # 🔴 你的飞书后台最新的 App ID 和 Secret
-APP_ID = "cli_a92c109bdd39dcbb"
-APP_SECRET = "3aYPRLvnZ8jmD1fyamuyhgC3QmDh4QHb"
+APP_ID = st.secrets["FEISHU_APP_ID"]
+APP_SECRET = st.secrets["FEISHU_APP_SECRET"]
 
 API_HOST = "https://open.feishu.cn/open-apis"
 # ===========================================
