@@ -99,7 +99,15 @@ if st.button("**开始拼接**", use_container_width=True, type="primary"):
         merged_text = "# 1. 原创意\n\n## 1.1 创意内容\n\n## 1.2 来源\n\n---\n\n"
         state_shooting_printed = False 
         
-        skip_keywords = ["质检结果", "通过质检", "经逐一审核", "综合评估", "推荐:", "推荐：", "推荐理由", "质检分析", "修改内容", "问题清单", "修正说明", "发现问题", "结构说明", "方案 1", "方案 2", "方案 3", "方案1", "方案2", "质检理由", "位置 |", "问题描述", "问题类型", "The following table:"]
+        # 👇 修改点 1：补全了清洗词库
+        skip_keywords = [
+            "质检结果", "通过质检", "经逐一审核", "综合评估", "推荐:", "推荐：", 
+            "推荐理由", "质检分析", "修改内容", "问题清单", "修正说明", "发现问题", 
+            "结构说明", "方案 1", "方案 2", "方案 3", "方案1", "方案2", "质检理由", 
+            "位置 |", "问题描述", "问题类型", "The following table:",
+            "质检说明：", "检查结论：", "修改后的完整分集细纲：" 
+        ]
+        
         resume_keywords = ["Theme", "情绪:", "情绪：", "适用冲突", "主角:", "主角：", "对手:", "对手：", "Act ", "姓名", "分场信息", "Shooting script", "Shooting Script", "人物关系图谱", "角色关系图"]
 
         with st.spinner('正在进行数据清洗与拼接...'):
@@ -129,6 +137,16 @@ if st.button("**开始拼接**", use_container_width=True, type="primary"):
                     raw_str = line.strip()
                     clean_str = re.sub(r'^[*#\-\s\|]+', '', raw_str) 
                     
+                    # 👇 修改点 2：秒杀带有星星(★)或打勾(✓)的各种质检行
+                    if '★' in clean_str or '✓' in clean_str:
+                        skip_mode = True
+                        continue
+
+                    # 👇 修改点 3：秒杀各种常见的AI质检小标题
+                    if re.match(r'^\d+\.\s*(.*?契合度|.*?符合度|淘汰.*?原因|.*?检查|.*?错误|角色.*?问题|集与集衔接断裂)[：:]?', clean_str):
+                        skip_mode = True
+                        continue
+
                     if any(clean_str.startswith(kw) for kw in skip_keywords):
                         skip_mode = True
                         continue
