@@ -108,7 +108,7 @@ if st.button("**开始拼接**", use_container_width=True, type="primary"):
             "质检说明：", "检查结论：", "修改后的完整分集细纲：" 
         ]
         
-        resume_keywords = ["Theme", "情绪:", "情绪：", "适用冲突", "主角:", "主角：", "对手:", "对手：", "Act ", "姓名", "分场信息", "Shooting script", "Shooting Script", "人物关系图谱", "角色关系图"]
+        resume_keywords = ["Theme", "情绪:", "情绪：", "适用冲突", "主角:", "主角：", "对手:", "对手：", "Act ", "姓名", "分场信息", "Shooting script", "Shooting Script", "人物关系图谱", "角色关系图", "核心事件ID"]
 
         with st.spinner('正在进行数据清洗与拼接...'):
             for file in sorted_files:
