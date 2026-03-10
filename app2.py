@@ -64,7 +64,7 @@ def get_sort_weight(filename):
     if "主角小传" in filename: return 2
     if "反派小传" in filename or "对手" in filename: return 3
     if "配角小传" in filename: return 4
-    if "三幕大纲" in filename: return 5
+    if "三幕大纲" in filename or "事件": return 5
     if "细纲" in filename: return 6
     if "shootingscript" in filename.lower():
         match = re.search(r'第(\d+)集', filename)
@@ -119,7 +119,7 @@ if st.button("**开始拼接**", use_container_width=True, type="primary"):
                 elif "主角小传" in filename: merged_text += "# 3. 主角小传\n\n"
                 elif "反派小传" in filename or "对手" in filename: merged_text += "# 4. 对手小传\n\n"
                 elif "配角小传" in filename: merged_text += "# 5. 配角小传\n\n"
-                elif "三幕大纲" in filename: merged_text += "# 6. 三幕表格大纲\n\n"
+                elif "三幕大纲" in filename or "事件": merged_text += "# 6. 三幕表格大纲\n\n"
                 elif "细纲" in filename: merged_text += "# 7. 单集细纲\n\n"
                 elif "shootingscript" in filename.lower():
                     if not state_shooting_printed:
